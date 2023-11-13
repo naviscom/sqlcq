@@ -11,7 +11,7 @@ import (
 
 type table_struct struct {
   Table_name          string
-  Column_name         []string
+  Table_Columns       []tableColumns
   IndexDetails        []index_name_details
   OutputFileName      string
   FunctionSignature   string
@@ -20,6 +20,13 @@ type table_struct struct {
 type index_name_details struct {
   IndexName       string
   IndexColumn     []string
+}
+
+
+type tableColumns struct {
+  Column_name     string
+  PrimaryFlag     bool
+  UniqueFlag      bool
 }
 
 func PrintInsertBlock(table []table_struct, i int) {
@@ -31,21 +38,21 @@ func PrintInsertBlock(table []table_struct, i int) {
   footer3 = "RETURNING *;"
   fmt.Println(firstLineInsert)
   fmt.Println(secondLineInsert)
-  for j := 1; j < len(table[i].Column_name); j++ {
-    if j >= 1 && j < len(table[i].Column_name)-1 {
-      fmt.Println("    "+table[i].Column_name[j]+"," )
+  for j := 1; j < len(table[i].Table_Columns); j++ {
+    if j >= 1 && j < len(table[i].Table_Columns)-1 {
+      fmt.Println("    "+table[i].Table_Columns[j].Column_name+"," )
     }
-    if j == len(table[i].Column_name)-1 {
-      fmt.Println("    "+table[i].Column_name[j])      
+    if j == len(table[i].Table_Columns)-1 {
+      fmt.Println("    "+table[i].Table_Columns[j].Column_name)      
     }
   }
   fmt.Println(footer1)
   fmt.Print(" ")
-  for j := 1; j < len(table[i].Column_name); j++ {
-    if j >= 1 && j < len(table[i].Column_name)-1 {
+  for j := 1; j < len(table[i].Table_Columns); j++ {
+    if j >= 1 && j < len(table[i].Table_Columns)-1 {
       fmt.Print("$"+strconv.Itoa(j)+", ")
     }
-    if j == len(table[i].Column_name)-1 {
+    if j == len(table[i].Table_Columns)-1 {
       fmt.Print("$"+strconv.Itoa(j))         
     }
   }
@@ -63,21 +70,21 @@ func PrintInsertBlockInFile(table []table_struct, i int, file *os.File) {
   footer3 = "RETURNING *;"
   _, _ = file.WriteString(firstLineInsert+"\n")
   _, _ = file.WriteString(secondLineInsert+"\n")
-  for j := 1; j < len(table[i].Column_name); j++ {
-    if j >= 1 && j < len(table[i].Column_name)-1 {
-      _, _ = file.WriteString("    "+table[i].Column_name[j]+","+"\n" )
+  for j := 1; j < len(table[i].Table_Columns); j++ {
+    if j >= 1 && j < len(table[i].Table_Columns)-1 {
+      _, _ = file.WriteString("    "+table[i].Table_Columns[j].Column_name+","+"\n" )
     }
-    if j == len(table[i].Column_name)-1 {
-      _, _ = file.WriteString("    "+table[i].Column_name[j]+"\n")      
+    if j == len(table[i].Table_Columns)-1 {
+      _, _ = file.WriteString("    "+table[i].Table_Columns[j].Column_name+"\n")      
     }
   }
   _, _ = file.WriteString(footer1+"\n")
   _, _ = file.WriteString(" ")
-  for j := 1; j < len(table[i].Column_name); j++ {
-    if j >= 1 && j < len(table[i].Column_name)-1 {
+  for j := 1; j < len(table[i].Table_Columns); j++ {
+    if j >= 1 && j < len(table[i].Table_Columns)-1 {
       _, _ = file.WriteString("$"+strconv.Itoa(j)+", ")
     }
-    if j == len(table[i].Column_name)-1 {
+    if j == len(table[i].Table_Columns)-1 {
       _, _ = file.WriteString("$"+strconv.Itoa(j))         
     }
   }
@@ -88,24 +95,32 @@ func PrintInsertBlockInFile(table []table_struct, i int, file *os.File) {
 
 func PrintGetBlock(table []table_struct, i int) {
   var firstLineGet, secondLineGet, thirdLineGet string
-  firstLineGet = "-- name: Get"+table[i].FunctionSignature+" :one"
-  secondLineGet = "SELECT * FROM "+table[i].Table_name
-  thirdLineGet = "WHERE id = $1 LIMIT 1;"
-  fmt.Println()
-  fmt.Println(firstLineGet)
-  fmt.Println(secondLineGet)
-  fmt.Println(thirdLineGet)
+  for j := 0; j < len(table[i].Table_Columns); j++ {
+    if table[i].Table_Columns[j].PrimaryFlag || table[i].Table_Columns[j].UniqueFlag {
+      firstLineGet = "-- name: Get"+table[i].FunctionSignature+strconv.Itoa(j)+" :one"
+      secondLineGet = "SELECT * FROM "+table[i].Table_name
+      thirdLineGet = "WHERE "+table[i].Table_Columns[j].Column_name+" = $1 LIMIT 1;"
+      fmt.Println()
+      fmt.Println(firstLineGet)
+      fmt.Println(secondLineGet)
+      fmt.Println(thirdLineGet)
+    }
+  }
 }
 
 func PrintGetBlockInFile(table []table_struct, i int, file *os.File) {
   var firstLineGet, secondLineGet, thirdLineGet string
-  firstLineGet = "-- name: Get"+table[i].FunctionSignature+" :one"
-  secondLineGet = "SELECT * FROM "+table[i].Table_name
-  thirdLineGet = "WHERE id = $1 LIMIT 1;"
-  _, _ = file.WriteString("\n")
-  _, _ = file.WriteString(firstLineGet+"\n")
-  _, _ = file.WriteString(secondLineGet+"\n")
-  _, _ = file.WriteString(thirdLineGet+"\n")
+  for j := 0; j < len(table[i].Table_Columns); j++ {
+    if table[i].Table_Columns[j].PrimaryFlag || table[i].Table_Columns[j].UniqueFlag {
+      firstLineGet = "-- name: Get"+table[i].FunctionSignature+strconv.Itoa(j)+" :one"
+      secondLineGet = "SELECT * FROM "+table[i].Table_name
+      thirdLineGet = "WHERE "+table[i].Table_Columns[j].Column_name+" = $1 LIMIT 1;"
+      _, _ = file.WriteString("\n")
+      _, _ = file.WriteString(firstLineGet+"\n")
+      _, _ = file.WriteString(secondLineGet+"\n")
+      _, _ = file.WriteString(thirdLineGet+"\n")  
+    }
+  }
 }
 
 func PrintListBlock(table []table_struct, i int) {
@@ -149,15 +164,15 @@ func PrintUpdateBlock(table []table_struct, i int) {
   fmt.Println(firstLineUpdate)
   fmt.Println(secondLineUpdate)
   fmt.Print(footer1)
-  for j := 1; j < len(table[i].Column_name); j++ {
+  for j := 1; j < len(table[i].Table_Columns); j++ {
     if j == 1 {
-      fmt.Println(table[i].Column_name[j], " = $"+strconv.Itoa(j+1)+",")
+      fmt.Println(table[i].Table_Columns[j].Column_name, " = $"+strconv.Itoa(j+1)+",")
     }
-    if j >= 2 && j < len(table[i].Column_name)-1 {
-      fmt.Println(table[i].Column_name[j], " = $"+strconv.Itoa(j+1)+",")
+    if j >= 2 && j < len(table[i].Table_Columns)-1 {
+      fmt.Println(table[i].Table_Columns[j].Column_name, " = $"+strconv.Itoa(j+1)+",")
     }
-    if j == len(table[i].Column_name)-1 {
-      fmt.Println(table[i].Column_name[j], " = $"+strconv.Itoa(j+1))         
+    if j == len(table[i].Table_Columns)-1 {
+      fmt.Println(table[i].Table_Columns[j].Column_name, " = $"+strconv.Itoa(j+1))         
     }
   }
   fmt.Println(footer2)
@@ -175,15 +190,15 @@ func PrintUpdateBlockInFile(table []table_struct, i int, file *os.File) {
   _, _ = file.WriteString(firstLineUpdate+"\n")
   _, _ = file.WriteString(secondLineUpdate+"\n")
   _, _ = file.WriteString(footer1)
-  for j := 1; j < len(table[i].Column_name); j++ {
+  for j := 1; j < len(table[i].Table_Columns); j++ {
     if j == 1 {
-      _, _ = file.WriteString(table[i].Column_name[j]+" = $"+strconv.Itoa(j+1)+","+"\n")
+      _, _ = file.WriteString(table[i].Table_Columns[j].Column_name+" = $"+strconv.Itoa(j+1)+","+"\n")
     }
-    if j >= 2 && j < len(table[i].Column_name)-1 {
-      _, _ = file.WriteString(table[i].Column_name[j]+" = $"+strconv.Itoa(j+1)+","+"\n")
+    if j >= 2 && j < len(table[i].Table_Columns)-1 {
+      _, _ = file.WriteString(table[i].Table_Columns[j].Column_name+" = $"+strconv.Itoa(j+1)+","+"\n")
     }
-    if j == len(table[i].Column_name)-1 {
-      _, _ = file.WriteString(table[i].Column_name[j]+" = $"+strconv.Itoa(j+1)+"\n")         
+    if j == len(table[i].Table_Columns)-1 {
+      _, _ = file.WriteString(table[i].Table_Columns[j].Column_name+" = $"+strconv.Itoa(j+1)+"\n")         
     }
   }
   _, _ = file.WriteString(footer2+"\n")
@@ -224,6 +239,7 @@ func main() {
   fileScanner.Split(bufio.ScanLines)
   var tableX []table_struct
   var table table_struct
+  var tabColumns tableColumns
   for fileScanner.Scan() {
     res1 := strings.Split(fileScanner.Text(), " ")
     if len(res1) > 1 {
@@ -243,10 +259,26 @@ func main() {
           } else {
             table.FunctionSignature = strings.ToUpper(strings.TrimSpace(table.Table_name[0:1]))+strings.TrimSpace(table.Table_name[1:])
         }
-        table.Column_name = nil
+        table.Table_Columns = nil
       }
       if res1[0] == "" && res1[1] == "" && strings.TrimSpace(res1[2][0:1]) == `"` {
-        table.Column_name = append(table.Column_name, strings.TrimSpace(res1[2][1:len(res1[2])-1]))
+        tabColumns.Column_name = strings.TrimSpace(res1[2][1:len(res1[2])-1])
+        if len(res1) > 4 {
+          if res1[4] == `PRIMARY` {
+            tabColumns.PrimaryFlag = true
+          } else{
+            tabColumns.PrimaryFlag = false
+          }
+          if res1[4] == `UNIQUE` {
+            tabColumns.UniqueFlag = true
+          } else{
+            tabColumns.UniqueFlag = false            
+          }
+        } else {
+          tabColumns.PrimaryFlag = false
+          tabColumns.UniqueFlag = false
+        }
+        table.Table_Columns = append(table.Table_Columns, tabColumns)
       }
       if res1[0] == "CREATE" && res1[1] == "INDEX" {
         for i:=0; i<len(tableX); i++{
@@ -281,8 +313,8 @@ func main() {
   }
   for i:=0; i<len(tableX); i++{
     fmt.Println("table Name: ", tableX[i].Table_name)
-    for j:=0; j<len(tableX[i].Column_name); j++{
-      fmt.Println("    column name: ", tableX[i].Column_name[j])
+    for j:=0; j<len(tableX[i].Table_Columns); j++{
+      fmt.Println("    column name: ", tableX[i].Table_Columns[j].Column_name, tableX[i].Table_Columns[j].PrimaryFlag, tableX[i].Table_Columns[j].UniqueFlag)
     }
     for j:=0; j<len(tableX[i].IndexDetails); j++{
       fmt.Println("    index name: ", tableX[i].IndexDetails[j].IndexName)

@@ -231,7 +231,6 @@ func main() {
   filePath := os.Args[1]
   destPath := os.Args[2]
   readFile, err := os.Open(filePath)
-  fmt.Println(destPath)
   if err != nil {
       fmt.Println(err)
   }

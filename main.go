@@ -234,11 +234,11 @@ func main() {
   if err != nil {
       fmt.Println(err)
   }
-  fileScanner := bufio.NewScanner(readFile)
-  fileScanner.Split(bufio.ScanLines)
   var tableX []table_struct
   var table table_struct
   var tabColumns tableColumns
+  fileScanner := bufio.NewScanner(readFile)
+  fileScanner.Split(bufio.ScanLines)
   for fileScanner.Scan() {
     res1 := strings.Split(fileScanner.Text(), " ")
     if len(res1) > 1 {

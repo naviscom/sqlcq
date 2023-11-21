@@ -230,13 +230,13 @@ func PrintDeleteBlockInFile(table []table_struct, i int, file *os.File) {
 func main() {
   filePath := os.Args[1]
   destPath := os.Args[2]
-  readFile, err := os.Open(filePath)
-  if err != nil {
-      fmt.Println(err)
-  }
   var tableX []table_struct
   var table table_struct
   var tabColumns tableColumns
+  readFile, err := os.Open(filePath)
+  if err != nil {
+    fmt.Println(err)
+  }
   fileScanner := bufio.NewScanner(readFile)
   fileScanner.Split(bufio.ScanLines)
   for fileScanner.Scan() {

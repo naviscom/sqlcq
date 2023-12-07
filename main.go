@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "bufio"
-	// "math/rand"
 	"fmt"
 	"os"
 	"strconv"
@@ -285,7 +283,7 @@ func PrintDeleteBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 func main() {
 	filePath := os.Args[1]
 	destPath := os.Args[2]
-	tableX := dbSchemaReader.ReadSchema(filePath)
+	tableX, _ := dbSchemaReader.ReadSchema(filePath)
 	for i := 0; i < len(tableX); i++ {
 		fmt.Println("table Name: ", tableX[i].Table_name, "OutputFileName: ", tableX[i].OutputFileName, "FunctionSignature: ", tableX[i].FunctionSignature, "FunctionSignature2: ", tableX[i].FunctionSignature2)
 		for j := 0; j < len(tableX[i].Table_Columns); j++ {
@@ -317,30 +315,4 @@ func main() {
 		PrintDeleteBlockInFile(tableX[:], i, file)
 		file.Close()
 	}
-	// destPath2_slice := strings.Split(destPath,"")
-	// destPath2_slice = destPath2_slice[:len(destPath2_slice)-9]
-	// destPath2_str := strings.Join(destPath2_slice,"")+"/api"
-	// var projectFolderName_str string
-	// // fmt.Println(destPath2_slice)
-	// // fmt.Println(destPath2_str)
-	// for x := len(destPath2_slice)-1; x >= 0; x-- {
-	// 	// fmt.Println(destPath2_slice[x])
-	//   if destPath2_slice[x] == `/` {
-	// 		projectFolderName := destPath2_slice[x+1:]
-	//     projectFolderName_str = strings.Join(projectFolderName,"")
-	// 		break
-	// 	}
-	// }
-	// // fmt.Println("projectFolderName_str: ", projectFolderName_str)
-	// for i:=0; i<len(tableX); i++{
-	//   file, errs := os.Create(destPath2_str+"/"+tableX[i].OutputFileName+".go")
-	//   if errs != nil {
-	//     fmt.Println("Failed to create file:", errs)
-	//     return
-	//   }
-	//   defer file.Close()
-	//   PrintHeaderInFile(tableX[:], i, file, projectFolderName_str)
-	//   PrintCreateInFile(tableX[:], i, file, projectFolderName_str)
-	//   file.Close()
-	// }
 }

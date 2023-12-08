@@ -195,12 +195,38 @@ func PrintListBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.F
 	var firstLineList, secondLineList, thirdLineList, fourthLineList, fifthLineList string
 	firstLineList = "-- name: List" + table[i].FunctionSignature2 + " :many"
 	secondLineList = "SELECT * FROM " + table[i].Table_name
-	thirdLineList = "ORDER BY id"
+	var newLine string
+	var fkFlag, firstFKFlag bool
+	fkFlag = false
+	firstFKFlag = false
+	var w int = 2
+	for g := 0; g < len(table[i].Table_Columns); g++ {
+		if table[i].Table_Columns[g].ForeignFlag {
+			w++
+			if !firstFKFlag {
+				newLine = "WHERE "
+				firstFKFlag = true
+			} 
+			if fkFlag{ newLine = newLine + " OR "}
+			newLine = newLine + table[i].Table_Columns[g].Column_name +" = $"+strconv.Itoa(w)
+			fkFlag = true
+		}
+	}
+	thirdLineList = "ORDER BY "
+	for g := 0; g < len(table[i].Table_Columns); g++ {
+		if table[i].Table_Columns[g].PrimaryFlag {
+			thirdLineList = thirdLineList + table[i].Table_Columns[g].Column_name
+			break
+		}
+	}
 	fourthLineList = "LIMIT $1"
 	fifthLineList = "OFFSET $2;"
 	_, _ = file.WriteString("\n")
 	_, _ = file.WriteString(firstLineList + "\n")
 	_, _ = file.WriteString(secondLineList + "\n")
+	if len(newLine) > 0 {
+		_, _ = file.WriteString(newLine + "\n")
+	}
 	_, _ = file.WriteString(thirdLineList + "\n")
 	_, _ = file.WriteString(fourthLineList + "\n")
 	_, _ = file.WriteString(fifthLineList + "\n")

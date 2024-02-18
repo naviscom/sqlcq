@@ -1,4 +1,4 @@
-package main
+package sqlcq
 
 import (
 	"fmt"
@@ -122,8 +122,19 @@ func PrintInsertBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 	footer3 = "RETURNING *;"
 	_, _ = file.WriteString(firstLineInsert + "\n")
 	_, _ = file.WriteString(secondLineInsert + "\n")
-	for j := 1; j < len(table[i].Table_Columns); j++ {
-		if j >= 1 && j < len(table[i].Table_Columns)-1 {
+	var z int
+	// fmt.Println("Table_Columns[0].ColumnType: ", table[i].Table_Columns[0].ColumnType)
+	// fmt.Println("Table_Columns[0].ColumnType: ", table[i].Table_Columns[0].PrimaryFlag)
+	if table[i].Table_Columns[0].ColumnType == "bigserial" && table[i].Table_Columns[0].PrimaryFlag {
+		// fmt.Println("I am inside 1")
+		z = 1
+	}
+	if table[i].Table_Columns[0].ColumnType != "bigserial" && table[i].Table_Columns[0].PrimaryFlag {
+		// fmt.Println("I am inside 0")
+		z = 0
+	}
+	for j := z; j < len(table[i].Table_Columns); j++ {
+		if j >= z && j < len(table[i].Table_Columns)-1 {
 			_, _ = file.WriteString("    " + table[i].Table_Columns[j].Column_name + "," + "\n")
 		}
 		if j == len(table[i].Table_Columns)-1 {
@@ -132,17 +143,29 @@ func PrintInsertBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 	}
 	_, _ = file.WriteString(footer1 + "\n")
 	_, _ = file.WriteString(" ")
-	for j := 1; j < len(table[i].Table_Columns); j++ {
-		if j >= 1 && j < len(table[i].Table_Columns)-1 {
-			_, _ = file.WriteString("$" + strconv.Itoa(j) + ", ")
-		}
-		if j == len(table[i].Table_Columns)-1 {
-			_, _ = file.WriteString("$" + strconv.Itoa(j))
-		}
+	if z == 1 {
+		for j := z; j < len(table[i].Table_Columns); j++ {
+			if j >= z && j < len(table[i].Table_Columns)-1 {
+				_, _ = file.WriteString("$" + strconv.Itoa(j) + ", ")
+			}
+			if j == len(table[i].Table_Columns)-1 {
+				_, _ = file.WriteString("$" + strconv.Itoa(j))
+			}
+		}	
+	}
+	if z == 0 {
+		for j := z; j < len(table[i].Table_Columns); j++ {
+			if j >= z && j < len(table[i].Table_Columns)-1 {
+				_, _ = file.WriteString("$" + strconv.Itoa(j+1) + ", ")
+			}
+			if j == len(table[i].Table_Columns)-1 {
+				_, _ = file.WriteString("$" + strconv.Itoa(j+1))
+			}
+		}	
 	}
 	_, _ = file.WriteString("\n")
 	_, _ = file.WriteString(footer2 + "\n")
-	_, _ = file.WriteString(footer3 + "\n")
+	_, _ = file.WriteString(footer3 + "\n")	
 }
 
 func PrintGetBlock(table []dbSchemaReader.Table_Struct, i int) {
@@ -263,7 +286,11 @@ func PrintUpdateBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 	firstLineUpdate = "-- name: Update" + table[i].FunctionSignature + " :one"
 	secondLineUpdate = "UPDATE " + table[i].Table_name
 	footer1 = "SET "
-	footer2 = "WHERE id = $1"
+	for j := 0; j < len(table[i].Table_Columns); j++ {
+		if table[i].Table_Columns[j].PrimaryFlag {
+			footer2 = "WHERE "+table[i].Table_Columns[j].Column_name+" = $1"
+		}
+	}
 	footer3 = "RETURNING *;"
 	_, _ = file.WriteString("\n")
 	_, _ = file.WriteString(firstLineUpdate + "\n")
@@ -299,16 +326,22 @@ func PrintDeleteBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 	var firstLineDelete, secondLineDelete, thirdLineDelete string
 	firstLineDelete = "-- name: Delete" + table[i].FunctionSignature + " :exec"
 	secondLineDelete = "DELETE FROM " + table[i].Table_name
-	thirdLineDelete = "WHERE id = $1"
+	for j := 0; j < len(table[i].Table_Columns); j++ {
+		if table[i].Table_Columns[j].PrimaryFlag {
+			thirdLineDelete = "WHERE "+table[i].Table_Columns[j].Column_name+" = $1"
+		}
+	}
 	_, _ = file.WriteString("\n")
 	_, _ = file.WriteString(firstLineDelete + "\n")
 	_, _ = file.WriteString(secondLineDelete + "\n")
 	_, _ = file.WriteString(thirdLineDelete + ";" + "\n")
 }
 
-func main() {
-	filePath := os.Args[1]
-	destPath := os.Args[2]
+func writeQuery(upSqlFile string, dest string) {
+	filePath := upSqlFile
+	destPath := dest
+	// filePath := os.Args[1]
+	// destPath := os.Args[2]
 	tableX, _ := dbSchemaReader.ReadSchema(filePath)
 	for i := 0; i < len(tableX); i++ {
 		fmt.Println("table Name: ", tableX[i].Table_name, "OutputFileName: ", tableX[i].OutputFileName, "FunctionSignature: ", tableX[i].FunctionSignature, "FunctionSignature2: ", tableX[i].FunctionSignature2)

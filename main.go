@@ -337,7 +337,7 @@ func PrintDeleteBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 	_, _ = file.WriteString(thirdLineDelete + ";" + "\n")
 }
 
-func writeQuery(upSqlFile string, dest string) {
+func WriteQuery(upSqlFile string, dest string) {
 	filePath := upSqlFile
 	destPath := dest
 	// filePath := os.Args[1]

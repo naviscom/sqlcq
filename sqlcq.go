@@ -344,14 +344,14 @@ func WriteQuery(upSqlFile string, dest string) {
 	// destPath := os.Args[2]
 	tableX, _ := dbschemareader.ReadSchema(filePath)
 	for i := 0; i < len(tableX); i++ {
-		fmt.Println("table Name: ", tableX[i].Table_name, "OutputFileName: ", tableX[i].OutputFileName, "FunctionSignature: ", tableX[i].FunctionSignature, "FunctionSignature2: ", tableX[i].FunctionSignature2)
+		// fmt.Println("table Name: ", tableX[i].Table_name, "OutputFileName: ", tableX[i].OutputFileName, "FunctionSignature: ", tableX[i].FunctionSignature, "FunctionSignature2: ", tableX[i].FunctionSignature2)
 		for j := 0; j < len(tableX[i].Table_Columns); j++ {
-			fmt.Println("    column name: ", tableX[i].Table_Columns[j].Column_name, tableX[i].Table_Columns[j].ColumnType, tableX[i].Table_Columns[j].PrimaryFlag, tableX[i].Table_Columns[j].UniqueFlag, tableX[i].Table_Columns[j].ColumnNameParams)
+			// fmt.Println("    column name: ", tableX[i].Table_Columns[j].Column_name, tableX[i].Table_Columns[j].ColumnType, tableX[i].Table_Columns[j].PrimaryFlag, tableX[i].Table_Columns[j].UniqueFlag, tableX[i].Table_Columns[j].ColumnNameParams)
 		}
 		for j := 0; j < len(tableX[i].IndexDetails); j++ {
-			fmt.Println("    index name: ", tableX[i].IndexDetails[j].IndexName)
+			// fmt.Println("    index name: ", tableX[i].IndexDetails[j].IndexName)
 			for k := 0; k < len(tableX[i].IndexDetails[j].IndexColumn); k++ {
-				fmt.Println("    index column name: ", tableX[i].IndexDetails[j].IndexColumn[k])
+				// fmt.Println("    index column name: ", tableX[i].IndexDetails[j].IndexColumn[k])
 			}
 		}
 	}

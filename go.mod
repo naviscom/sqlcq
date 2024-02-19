@@ -1,5 +1,5 @@
 module github.com/naviscom/sqlcq
 
-go 1.21.3
+go 1.21.5
 
-require github.com/naviscom/dbSchemaReader v0.0.0-20231128044339-262cd2655319
+require github.com/naviscom/dbschemareader v0.0.0-20240219030912-6a8f81de9cf1

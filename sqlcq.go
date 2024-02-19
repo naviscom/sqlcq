@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/naviscom/dbSchemaReader"
+	"github.com/naviscom/dbschemareader"
 )
 
-func PrintHeaderInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File, projectFolderName string) {
+func PrintHeaderInFile(table []dbschemareader.Table_Struct, i int, file *os.File, projectFolderName string) {
 	_, _ = file.WriteString("package api" + "\n")
 	_, _ = file.WriteString("\n")
 	_, _ = file.WriteString("import (" + "\n")
@@ -24,7 +24,7 @@ func PrintHeaderInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File
 	_, _ = file.WriteString("\n")
 }
 
-func PrintCreateInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File, projectFolderName string) {
+func PrintCreateInFile(table []dbschemareader.Table_Struct, i int, file *os.File, projectFolderName string) {
 	tableName_str := strings.ToUpper(strings.TrimSpace(table[i].OutputFileName[0:1])) + strings.TrimSpace(table[i].OutputFileName[1:])
 	_, _ = file.WriteString("type create" + tableName_str + "Request struct {" + "\n")
 	for j := 1; j < len(table[i].Table_Columns); j++ {
@@ -81,7 +81,7 @@ func PrintCreateInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File
 	_, _ = file.WriteString("}" + "\n")
 }
 
-func PrintInsertBlock(table []dbSchemaReader.Table_Struct, i int) {
+func PrintInsertBlock(table []dbschemareader.Table_Struct, i int) {
 	var firstLineInsert, secondLineInsert, footer1, footer2, footer3 string
 	firstLineInsert = "-- name: Create" + table[i].FunctionSignature + " :one"
 	secondLineInsert = "INSERT INTO " + table[i].Table_name + " ("
@@ -113,7 +113,7 @@ func PrintInsertBlock(table []dbSchemaReader.Table_Struct, i int) {
 	fmt.Println(footer3)
 }
 
-func PrintInsertBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File) {
+func PrintInsertBlockInFile(table []dbschemareader.Table_Struct, i int, file *os.File) {
 	var firstLineInsert, secondLineInsert, footer1, footer2, footer3 string
 	firstLineInsert = "-- name: Create" + table[i].FunctionSignature + " :one"
 	secondLineInsert = "INSERT INTO " + table[i].Table_name + " ("
@@ -168,7 +168,7 @@ func PrintInsertBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 	_, _ = file.WriteString(footer3 + "\n")	
 }
 
-func PrintGetBlock(table []dbSchemaReader.Table_Struct, i int) {
+func PrintGetBlock(table []dbschemareader.Table_Struct, i int) {
 	var firstLineGet, secondLineGet, thirdLineGet string
 	for j := 0; j < len(table[i].Table_Columns); j++ {
 		if table[i].Table_Columns[j].PrimaryFlag || table[i].Table_Columns[j].UniqueFlag {
@@ -184,7 +184,7 @@ func PrintGetBlock(table []dbSchemaReader.Table_Struct, i int) {
 	}
 }
 
-func PrintGetBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File) {
+func PrintGetBlockInFile(table []dbschemareader.Table_Struct, i int, file *os.File) {
 	var firstLineGet, secondLineGet, thirdLineGet string
 	for j := 0; j < len(table[i].Table_Columns); j++ {
 		if table[i].Table_Columns[j].PrimaryFlag || table[i].Table_Columns[j].UniqueFlag {
@@ -199,7 +199,7 @@ func PrintGetBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.Fi
 	}
 }
 
-func PrintListBlock(table []dbSchemaReader.Table_Struct, i int) {
+func PrintListBlock(table []dbschemareader.Table_Struct, i int) {
 	var firstLineList, secondLineList, thirdLineList, fourthLineList, fifthLineList string
 	firstLineList = "-- name: List" + table[i].FunctionSignature2 + " :many"
 	secondLineList = "SELECT * FROM " + table[i].Table_name
@@ -214,7 +214,7 @@ func PrintListBlock(table []dbSchemaReader.Table_Struct, i int) {
 	fmt.Println(fifthLineList)
 }
 
-func PrintListBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File) {
+func PrintListBlockInFile(table []dbschemareader.Table_Struct, i int, file *os.File) {
 	var firstLineList, secondLineList, thirdLineList, fourthLineList, fifthLineList string
 	firstLineList = "-- name: List" + table[i].FunctionSignature2 + " :many"
 	secondLineList = "SELECT * FROM " + table[i].Table_name
@@ -255,7 +255,7 @@ func PrintListBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.F
 	_, _ = file.WriteString(fifthLineList + "\n")
 }
 
-func PrintUpdateBlock(table []dbSchemaReader.Table_Struct, i int) {
+func PrintUpdateBlock(table []dbschemareader.Table_Struct, i int) {
 	var firstLineUpdate, secondLineUpdate, footer1, footer2, footer3 string
 	firstLineUpdate = "-- name: Update" + table[i].FunctionSignature + " :one"
 	secondLineUpdate = "UPDATE " + table[i].Table_name
@@ -281,7 +281,7 @@ func PrintUpdateBlock(table []dbSchemaReader.Table_Struct, i int) {
 	fmt.Println(footer3)
 }
 
-func PrintUpdateBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File) {
+func PrintUpdateBlockInFile(table []dbschemareader.Table_Struct, i int, file *os.File) {
 	var firstLineUpdate, secondLineUpdate, footer1, footer2, footer3 string
 	firstLineUpdate = "-- name: Update" + table[i].FunctionSignature + " :one"
 	secondLineUpdate = "UPDATE " + table[i].Table_name
@@ -311,7 +311,7 @@ func PrintUpdateBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os
 	_, _ = file.WriteString(footer3 + "\n")
 }
 
-func PrintDeleteBlock(table []dbSchemaReader.Table_Struct, i int) {
+func PrintDeleteBlock(table []dbschemareader.Table_Struct, i int) {
 	var firstLineDelete, secondLineDelete, thirdLineDelete string
 	firstLineDelete = "-- name: Delete" + table[i].FunctionSignature + " :exec"
 	secondLineDelete = "DELETE FROM " + table[i].Table_name
@@ -322,7 +322,7 @@ func PrintDeleteBlock(table []dbSchemaReader.Table_Struct, i int) {
 	fmt.Println(thirdLineDelete + ";")
 }
 
-func PrintDeleteBlockInFile(table []dbSchemaReader.Table_Struct, i int, file *os.File) {
+func PrintDeleteBlockInFile(table []dbschemareader.Table_Struct, i int, file *os.File) {
 	var firstLineDelete, secondLineDelete, thirdLineDelete string
 	firstLineDelete = "-- name: Delete" + table[i].FunctionSignature + " :exec"
 	secondLineDelete = "DELETE FROM " + table[i].Table_name
@@ -342,7 +342,7 @@ func WriteQuery(upSqlFile string, dest string) {
 	destPath := dest
 	// filePath := os.Args[1]
 	// destPath := os.Args[2]
-	tableX, _ := dbSchemaReader.ReadSchema(filePath)
+	tableX, _ := dbschemareader.ReadSchema(filePath)
 	for i := 0; i < len(tableX); i++ {
 		fmt.Println("table Name: ", tableX[i].Table_name, "OutputFileName: ", tableX[i].OutputFileName, "FunctionSignature: ", tableX[i].FunctionSignature, "FunctionSignature2: ", tableX[i].FunctionSignature2)
 		for j := 0; j < len(tableX[i].Table_Columns); j++ {

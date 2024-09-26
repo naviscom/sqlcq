@@ -50,7 +50,7 @@ func PrintInsertBlockInFile(table []dbschemareader.Table_Struct, i int, file *os
     _, _ = file.WriteString(footer1 + "\n")
     _, _ = file.WriteString(" ")
     if z == 1 {
-        u := 0
+        u := 1
         for j := z; j <= len(table[i].Table_Columns); j++ {
             if j >= z && j <= len(table[i].Table_Columns)-1 {
                 if table[i].Table_name == "users" && (table[i].Table_Columns[j].Column_name == "password_changed_at" || table[i].Table_Columns[j].Column_name == "password_created_at") {
@@ -71,7 +71,7 @@ func PrintInsertBlockInFile(table []dbschemareader.Table_Struct, i int, file *os
                 if j > z {
                     _, _ = file.WriteString(",")
                 }
-                _, _ = file.WriteString("$" + strconv.Itoa(j))
+                _, _ = file.WriteString("$" + strconv.Itoa(u))
                 u++
             }
         }

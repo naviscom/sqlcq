@@ -50,12 +50,29 @@ func PrintInsertBlockInFile(table []dbschemareader.Table_Struct, i int, file *os
     _, _ = file.WriteString(footer1 + "\n")
     _, _ = file.WriteString(" ")
     if z == 1 {
+        u := 0
         for j := z; j <= len(table[i].Table_Columns); j++ {
             if j >= z && j <= len(table[i].Table_Columns)-1 {
+                if table[i].Table_name == "users" && (table[i].Table_Columns[j].Column_name == "password_changed_at" || table[i].Table_Columns[j].Column_name == "password_created_at") {
+                    continue
+                }
+                if table[i].Table_name == "sessions" && (table[i].Table_Columns[j].Column_name == "created_at") {
+                    continue
+                }
+                if table[i].Table_name == "userpaymenttokens" && (table[i].Table_Columns[j].Column_name == "created_at" || table[i].Table_Columns[j].Column_name == "updated_at") {
+                    continue
+                }
+                if table[i].Table_name == "subusers" && (table[i].Table_Columns[j].Column_name == "password_changed_at" || table[i].Table_Columns[j].Column_name == "password_created_at") {
+                    continue
+                }
+                if table[i].Table_name == "activities" && (table[i].Table_Columns[j].Column_name == "service_used_at") {
+                    continue
+                }    
                 if j > z {
                     _, _ = file.WriteString(",")
                 }
                 _, _ = file.WriteString("$" + strconv.Itoa(j))
+                u++
             }
         }
     }

@@ -210,27 +210,32 @@ func PrintUpdateBlockInFile(table []dbschemareader.Table_Struct, i int, file *os
 
 
     if table[i].Table_name == "users" || table[i].Table_name == "subusers" {
-        for j := 1; j < len(table[i].Table_Columns); j++ {
+        u := 2
+        //len(table[i].Table_Columns =17 (0-16)
+        for j := 0; j < len(table[i].Table_Columns); j++ {
             if j > 0 && j < len(table[i].Table_Columns)-1 {
-                if table[i].Table_Columns[j].Column_name == "password_created_at" {
+                if table[i].Table_Columns[j].Column_name == "id" || table[i].Table_Columns[j].Column_name == "email" || table[i].Table_Columns[j].Column_name == "username" || table[i].Table_Columns[j].Column_name == "password_created_at" {
                     continue
                 }
-                if table[i].Table_Columns[j+1].Column_name == "password_created_at" && j+1 < len(table[i].Table_Columns)-1 {
-                    _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(j+1)+ "," + "\n")
-                    continue
-                }
-                if table[i].Table_Columns[j+1].Column_name == "password_created_at" && j+1 == len(table[i].Table_Columns)-1 {
-                    _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(j+1) + "\n")
-                    continue
-                }
-                _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(j+1) + "," + "\n")
-                continue    
+                // if table[i].Table_Columns[j+1].Column_name == "password_created_at" && j+1 < len(table[i].Table_Columns)-1 {
+                //     _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(u)+ "," + "\n")
+                //     u++
+                //     continue
+                // }
+                // if table[i].Table_Columns[j+1].Column_name == "password_created_at" && j+1 == len(table[i].Table_Columns)-1 {
+                //     _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(u) + "\n")
+                //     u++
+                //     continue
+                // }
+                _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(u) + "," + "\n")
+                u++
+                continue
             }
             if j == len(table[i].Table_Columns)-1 {
                 if table[i].Table_Columns[j].Column_name == "password_created_at"{
                     continue
                 }
-                _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(j) + "\n")
+                _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(u) + "\n")
             }
         }   
     } else if table[i].Table_name == "userpaymenttokens"{

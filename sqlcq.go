@@ -9,78 +9,6 @@ import (
     "github.com/naviscom/dbschemareader"
 )
 
-// func PrintHeaderInFile(table []dbschemareader.Table_Struct, i int, file *os.File, projectFolderName string) {
-//     _, _ = file.WriteString("package api" + "\n")
-//     _, _ = file.WriteString("\n")
-//     _, _ = file.WriteString("import (" + "\n")
-//     _, _ = file.WriteString(`   // "errors"` + "\n")
-//     _, _ = file.WriteString(`   "net/http"` + "\n")
-//     _, _ = file.WriteString("\n")
-//     _, _ = file.WriteString(`   "github.com/gin-gonic/gin"` + "\n")
-//     _, _ = file.WriteString(`   db "github.com/naviscom/` + projectFolderName + `/db/sqlc` + `"` + "\n")
-//     _, _ = file.WriteString(`   // "github.com/naviscom/` + projectFolderName + `/tocken` + `"` + "\n")
-//     _, _ = file.WriteString(`   // "time"` + "\n")
-//     _, _ = file.WriteString(")" + "\n")
-//     _, _ = file.WriteString("\n")
-// }
-
-// func PrintCreateInFile(table []dbschemareader.Table_Struct, i int, file *os.File, projectFolderName string) {
-//     tableName_str := strings.ToUpper(strings.TrimSpace(table[i].OutputFileName[0:1])) + strings.TrimSpace(table[i].OutputFileName[1:])
-//     _, _ = file.WriteString("type create" + tableName_str + "Request struct {" + "\n")
-//     for j := 1; j < len(table[i].Table_Columns); j++ {
-//         var columnType string
-//         if table[i].Table_Columns[j].ColumnType == "varchar" || table[i].Table_Columns[j].ColumnType == "varchar," {
-//             columnType = "string"
-//         }
-//         if table[i].Table_Columns[j].ColumnType == "bigint" || table[i].Table_Columns[j].ColumnType == "bigint," {
-//             columnType = "int64"
-//         }
-//         if table[i].Table_Columns[j].ColumnType == "real" || table[i].Table_Columns[j].ColumnType == "real," {
-//             columnType = "float32"
-//         }
-//         if table[i].Table_Columns[j].ColumnType == "timestamptz" || table[i].Table_Columns[j].ColumnType == "timestamptz," {
-//             columnType = "time.Time"
-//         }
-//         _, _ = file.WriteString("    " + strings.ToUpper(strings.TrimSpace(table[i].Table_Columns[j].Column_name[0:1])) + strings.TrimSpace(table[i].Table_Columns[j].Column_name[1:]) + `    ` + columnType + ` ` + "`json:" + `"` + table[i].Table_Columns[j].Column_name + `"` + ` binding:"required"` + "`" + "\n")
-//     }
-//     _, _ = file.WriteString("}" + "\n")
-//     _, _ = file.WriteString("\n")
-//     _, _ = file.WriteString("  func (server *Server) create" + tableName_str + "(ctx *gin.Context) {" + "\n")
-//     _, _ = file.WriteString("   var req create" + tableName_str + "Request" + "\n")
-//     _, _ = file.WriteString("   if err := ctx.ShouldBindJSON(&req); err != nil {" + "\n")
-//     _, _ = file.WriteString("       ctx.JSON(http.StatusBadRequest, errorResponse(err))" + "\n")
-//     _, _ = file.WriteString("       return" + "\n")
-//     _, _ = file.WriteString("   }" + "\n")
-//     _, _ = file.WriteString("\n")
-//     _, _ = file.WriteString("   arg := db.Create" + tableName_str + "Params{" + "\n")
-//     var column_name_str string
-//     for j := 1; j < len(table[i].Table_Columns); j++ {
-//         column_name_slice := strings.Split(table[i].Table_Columns[j].Column_name, "_")
-//         // fmt.Println(column_name_slice)
-//         for k := 0; k < len(column_name_slice); k++ {
-//             if column_name_slice[k] == "id" {
-//                 column_name_slice[k] = strings.ToUpper(strings.TrimSpace(column_name_slice[k]))
-//             } else {
-//                 column_name_slice[k] = strings.ToUpper(strings.TrimSpace(column_name_slice[k][0:1])) + strings.TrimSpace(column_name_slice[k][1:])
-
-//             }
-//             column_name_str = strings.Join(column_name_slice, "")
-//         }
-//         // fmt.Println(column_name_str)
-//         _, _ = file.WriteString("       " + column_name_str + ":" + "    req." + strings.ToUpper(strings.TrimSpace(table[i].Table_Columns[j].Column_name[0:1])) + strings.TrimSpace(table[i].Table_Columns[j].Column_name[1:]) + "," + "\n")
-//     }
-//     _, _ = file.WriteString("   }" + "\n")
-//     _, _ = file.WriteString("\n")
-//     _, _ = file.WriteString("   " + table[i].Table_name + ", err := server.store.Create" + tableName_str + "(ctx, arg)" + "\n")
-//     _, _ = file.WriteString("   if err != nil {" + "\n")
-//     _, _ = file.WriteString("       ctx.JSON(http.StatusInternalServerError, errorResponse(err))" + "\n")
-//     _, _ = file.WriteString("       return" + "\n")
-//     _, _ = file.WriteString("   }" + "\n")
-//     _, _ = file.WriteString("\n")
-//     _, _ = file.WriteString("   ctx.JSON(http.StatusOK, " + table[i].Table_name + ")" + "\n")
-//     _, _ = file.WriteString("}" + "\n")
-// }
-
 func PrintInsertBlockInFile(table []dbschemareader.Table_Struct, i int, file *os.File) {
     var firstLineInsert, secondLineInsert, footer1, footer2, footer3 string
     firstLineInsert = "-- name: Create" + table[i].FunctionSignature + " :one"
@@ -93,8 +21,7 @@ func PrintInsertBlockInFile(table []dbschemareader.Table_Struct, i int, file *os
     var z int
     if (table[i].Table_Columns[0].ColumnType == "bigserial" && table[i].Table_Columns[0].PrimaryFlag) || (table[i].Table_Columns[0].ColumnType == "uuid" && table[i].Table_Columns[0].PrimaryFlag) {
         z = 1
-    }
-    if (table[i].Table_Columns[0].ColumnType != "bigserial"  && table[i].Table_Columns[0].PrimaryFlag) ||  (table[i].Table_Columns[0].ColumnType != "uuid"  && table[i].Table_Columns[0].PrimaryFlag){
+    } else if table[i].Table_Columns[0].PrimaryFlag {
         z = 0
     }
     for j := z; j < len(table[i].Table_Columns); j++ {

@@ -19,10 +19,14 @@ func PrintInsertBlockInFile(table []dbschemareader.Table_Struct, i int, file *os
     _, _ = file.WriteString(firstLineInsert + "\n")
     _, _ = file.WriteString(secondLineInsert + "\n")
     var z int
-    if (table[i].Table_Columns[0].ColumnType == "bigserial" && table[i].Table_Columns[0].PrimaryFlag) || (table[i].Table_Columns[0].ColumnType == "uuid" && table[i].Table_Columns[0].PrimaryFlag) {
-        z = 1
-    } else if table[i].Table_Columns[0].PrimaryFlag {
+    if table[i].Table_name == "sessions" {
         z = 0
+    }else{
+        if (table[i].Table_Columns[0].ColumnType == "bigserial" && table[i].Table_Columns[0].PrimaryFlag) || (table[i].Table_Columns[0].ColumnType == "uuid" && table[i].Table_Columns[0].PrimaryFlag) {
+            z = 1
+        } else if table[i].Table_Columns[0].PrimaryFlag {
+            z = 0
+        }    
     }
     for j := z; j < len(table[i].Table_Columns); j++ {
         if j >= z && j <= len(table[i].Table_Columns)-1 {
@@ -227,7 +231,13 @@ func PrintUpdateBlockInFile(table []dbschemareader.Table_Struct, i int, file *os
                 //     u++
                 //     continue
                 // }
-                _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(u) + "," + "\n")
+                if j == len(table[i].Table_Columns)-2 {
+                    if table[i].Table_Columns[j+1].Column_name == "password_created_at"{
+                        _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(u) + "\n")
+                    }    
+                }else{
+                    _, _ = file.WriteString(table[i].Table_Columns[j].Column_name + " = $" + strconv.Itoa(u) + "," + "\n")
+                }
                 u++
                 continue
             }

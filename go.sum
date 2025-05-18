@@ -1,2 +1,2 @@
-github.com/naviscom/dbschemareader v0.0.0-20240509222750-306c070b6396 h1:Lnz4T2jwjFcwUaAJWmURqln3cUbknYdSTau2cK33lQQ=
-github.com/naviscom/dbschemareader v0.0.0-20240509222750-306c070b6396/go.mod h1:NiH004lmCAV7PRlnPMRyW7cHzAoj/fXhwily2Myidyw=
+github.com/naviscom/dbschemareader v1.0.1 h1:a1cop2V+JH3z8/s1sjjJ7nmVTfTr1Z2X5m5Q65nrMdM=
+github.com/naviscom/dbschemareader v1.0.1/go.mod h1:NiH004lmCAV7PRlnPMRyW7cHzAoj/fXhwily2Myidyw=
